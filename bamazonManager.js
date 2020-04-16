@@ -21,7 +21,8 @@ Add to Inventory
 
 Add New Product
 [ ] will allow user to add a new product
-
-
-
 */
+
+function addProduct(){
+
+}

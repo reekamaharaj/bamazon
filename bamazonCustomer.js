@@ -20,3 +20,30 @@ If No
     [ ] 'Insufficient quantity' if there are not enough of the item
     [ ] Ends transaction
 */
+const inquirer = require("inquirer");
+const mysql = require("mysql");
+
+const connection = mysql.createConnection({
+    host: "localhost",
+    port: 3306,
+    user: "root",
+    password: "yuffie",
+    database: "bamazonDB"
+});
+
+connection.connect(function(err) {
+    if (err) throw err;
+    console.log("connected as id " + connection.threadId + "\n");
+    table
+});
+
+
+//function to print table
+function table(){
+    connection.query("SELECT * from products",
+    function(err, res){
+        if (err) throw err;
+        console.log(res);
+        connection.end();
+    });
+}

@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
+let stock;
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -50,13 +51,28 @@ function shop() {
             message: "Input the item number you wish to purchase.",
         })
         .then(function (response) {
-            let query = "SELECT item_id, product_name, price FROM products WHERE ?";
-            connection.query(query, { item_id: response.item_id }, function (err, res) {
-                    if (err) throw err;
-                    for (var i = 0; i < res.length; i++) {
-                        console.log( "The following information is for the selected item. \n id: " + res[i].item_id + " product: " + res[i].product_name + " price: $" + res[i].price + "number in stock: " + parseInt(res[i].stock_quantity));
-                    }
-                    purchase();
+            let query =
+                "SELECT item_id, product_name, price, stock_quantity FROM products WHERE ?";
+            connection.query(query, { item_id: response.item_id }, function (
+                err,
+                res
+            ) {
+                if (err) throw err;
+                for (let i = 0; i < res.length; i++) {
+                    stock = res[i].stock_quantity;
+                    console.log(
+                        " The following information is for the selected item. \n id: " +
+                            res[i].item_id +
+                            " product: " +
+                            res[i].product_name +
+                            " price: $" +
+                            res[i].price +
+                            " number in stock: " +
+                            stock
+                    );
+                }
+                purchase(stock);
+                
             });
         });
 }
@@ -75,19 +91,21 @@ If No
     [ ] Ends transaction
 */
 
-function purchase() {
-    inquirer.prompt({
-        name: "amount",
-        type: "number",
-        message: "How many would you like to purchase?"
-    }).then(function(response){
-        let request = response.amount;
-        let query = "SELECT stock_quantity FROM products";
-        connection.query(query, function(err, res){
-            if (err) throw err;
-            // console.log("Number in stock: " + res.stock_quantity);
-            console.log("in stock: " + parseInt(res.stock_quantity));
-            console.log("You want: " + request);
+function purchase(stock) {
+    inquirer
+        .prompt({
+            name: "amount",
+            type: "number",
+            message: "How many would you like to purchase?",
         })
-    })
+        .then(function (response) {
+            let request = response.amount;
+            let query = "SELECT stock_quantity FROM products";
+            connection.query(query, function (err, res) {
+                if (err) throw err;
+                // console.log("Number in stock: " + res.stock_quantity);
+                console.log("in stock: " + stock);
+                console.log("You want: " + request);
+            });
+        });
 }

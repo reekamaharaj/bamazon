@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
-let stock;
+let toBePurchased;
+let total;
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -40,8 +41,8 @@ function table() {
 /*
 prompt user with messages
 [x] Ask user for the id of the product they want
-[ ] Ask user how many units they want to buy
-[ ] Confirm purchase
+[x] Ask user how many units they want to buy
+[x] Process purchase
 */
 function shop() {
     inquirer
@@ -59,7 +60,7 @@ function shop() {
             ) {
                 if (err) throw err;
                 for (let i = 0; i < res.length; i++) {
-                    stock = res[i].stock_quantity;
+                    toBePurchased = res[i];
                     console.log(
                         " The following information is for the selected item. \n id: " +
                             res[i].item_id +
@@ -68,10 +69,10 @@ function shop() {
                             " price: $" +
                             res[i].price +
                             " number in stock: " +
-                            stock
+                            res[i].stock_quantity
                     );
                 }
-                purchase(stock);
+                purchase(toBePurchased);
                 
             });
         });
@@ -80,18 +81,18 @@ function shop() {
 //question shows up before the table and the input is after the table, assuming this is because the function for the question starts running before the table has been populated. Need to fix that
 
 /*
-[ ] Check database to see if the item is available
-[ ] Check database to see if the quantity of item is available
+[x] Check database to see if the item is available
+[x] Check database to see if the quantity of item is available
 If Yes
-    [ ] Update database to reflect the sold product
-    [ ] Display customer's total
+    [x] Update database to reflect the sold product
+    [x] Display customer's total
     [ ] product_sales -> for every purchase of the item add the price to this value (#product sold * product price)
 If No
-    [ ] 'Insufficient quantity' if there are not enough of the item
-    [ ] Ends transaction
+    [x] 'Insufficient quantity' if there are not enough of the item
+    [x] Ends transaction
 */
 
-function purchase(stock) {
+function purchase(item) {
     inquirer
         .prompt({
             name: "amount",
@@ -103,9 +104,32 @@ function purchase(stock) {
             let query = "SELECT stock_quantity FROM products";
             connection.query(query, function (err, res) {
                 if (err) throw err;
-                // console.log("Number in stock: " + res.stock_quantity);
-                console.log("in stock: " + stock);
+                console.log("in stock: " + item.stock_quantity);
                 console.log("You want: " + request);
+                if (request <= item.stock_quantity){
+                    let newQuantity = item.stock_quantity - request;
+                    connection.query(
+                        "UPDATE products SET ? WHERE ?",
+                        [
+                            {
+                                stock_quantity: newQuantity
+                            },
+                            {
+                                item_id: item.item_id
+                            }
+                        ], function(err, res) {
+                            if(err) throw err;
+                            total = (request*item.price);
+                            console.log("Your total is: $" + total);
+                            console.log(res.affectedRows + " stock quantity updated.");
+                        }
+                    );
+                    connection.end();
+                }
+                else {
+                    console.log("Sorry we only have " + item.stock_quantity);
+                    connection.end();
+                }
             });
         });
 }

@@ -73,7 +73,6 @@ function shop() {
                     );
                 }
                 purchase(toBePurchased);
-                
             });
         });
 }
@@ -97,7 +96,7 @@ function purchase(item) {
         .prompt({
             name: "amount",
             type: "number",
-            message: "How many would you like to purchase?",
+            message: "How many would you like to purchase?"
         })
         .then(function (response) {
             let request = response.amount;
@@ -122,8 +121,7 @@ function purchase(item) {
                             total = (request*item.price);
                             console.log("Your total is: $" + total);
                             console.log(res.affectedRows + " stock quantity updated.");
-                        }
-                    );
+                        });
                     connection.end();
                 }
                 else {

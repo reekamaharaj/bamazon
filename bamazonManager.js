@@ -1,6 +1,8 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 
+let moreProduct;
+
 const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -30,7 +32,8 @@ function menu(){
             "View Products for Sale",
             "View Low Inventory",
             "Add to Inventory",
-            "Add New Product"
+            "Add New Product",
+            "exit"
         ]
     }).then(function(answer){
         switch(answer.action){
@@ -78,22 +81,125 @@ function products(){
 }
 
 // View Low Inventory
-// [ ] display all items with an inventory lower than 5
+// [x] display all items with an inventory lower than 5
 function lowInventory(){
-console.log("low inventory");
-connection.end();
+    let query = "SELECT item_id, product_name, stock_quantity FROM products WHERE stock_quantity <= 5";
+    
+    connection.query(query, function(err, res) {
+        if (err) throw err;
+        console.log("The following products have an inventory less than 5: ");
+        res.forEach((res) => {
+            console.log(`id: ${res.item_id} product: ${res.product_name} price: $${res.price} quantity in stock: ${res.stock_quantity}`);
+        });
+        connection.end();
+    })
 }
 
-Add to Inventory
-// [ ] prompt user to "add more" of item
+// Add to Inventory
+// [x] prompt user to "add more" of item
 function addToInventory(){
-console.log("add to inventory");
-connection.end();
+    inquirer.prompt({
+        name: "item_id",
+        type: "number",
+        message: "What is the item number for the product?"
+    }).then(function(response){
+        let query = "SELECT item_id, product_name, stock_quantity FROM products WHERE ?";
+        connection.query(query, { item_id: response.item_id}, function(err, res){
+            if(err) throw err;
+            for (let i =0; i < res.length; i++){
+                moreProduct = res[i];
+                console.log(
+                    " The following information is for the selected item. \n id: " +
+                        res[i].item_id +
+                        " product: " +
+                        res[i].product_name +
+                        " number in stock: " + 
+                        res[i].stock_quantity
+                );
+            }
+            increaseQuant(moreProduct);
+        });
+    });
+}
+
+function increaseQuant(item){
+    inquirer.prompt({
+        name: "amount",
+        type: "number",
+        message: "How much is being added?"
+    }).then(function(response){
+        let input = response.amount;
+        let query = "SELECT stock_quantity FROM products";
+        connection.query(query, function(err, res){
+            if (err) throw err;
+            let newQuantity = item.stock_quantity + input;
+            connection.query( "UPDATE products SET ? WHERE ?", 
+            [
+                {
+                    stock_quantity: newQuantity
+                },
+                {
+                    item_id: item.item_id
+                }
+            ], function (err, res){
+                if(err) throw err;
+                console.log(res.affectedRows + " stock quantity updated.");
+            });
+            connection.end();
+        });
+    });
 }
 
 // Add New Product
-// [ ] will allow user to add a new product
+// [x] will allow user to add a new product
 function addProduct(){
-console.log("add product");
-connection.end();
+    inquirer.prompt([
+        {
+            name: "productName",
+            type: "input",
+            message: "What is the name of the product?"
+        },
+        {
+            name: "department",
+            type: "input",
+            message: "What department will this product be in?"
+        },
+        {
+            name: "price",
+            type: "number",
+            message: "How much does this product cost?",
+            validate: function(value) {
+                if (isNaN(value) === false){
+                    return true;
+                }
+                return false;
+            }
+        },
+        {
+            name: "stock",
+            type: "number",
+            message: "How much product?",
+            validate: function(value) {
+                if (isNaN(value) === false){
+                    return true;
+                }
+                return false;
+            }
+        }
+    ]).then(function(answer){
+        connection.query(
+            "INSERT INTO products SET ?",
+            {
+                product_name: answer.productName,
+                department_name: answer.department,
+                price: answer.price,
+                stock_quantity: answer.stock
+            },
+            function(err){
+                if(err) throw err;
+                console.log("Product added!");
+            }
+        )
+        connection.end();
+    })
 }

@@ -8,7 +8,7 @@ const connection = mysql.createConnection({
     port: 3306,
     user: "root",
     password: "yuffie",
-    database: "bamazonDB",
+    database: "bamazonDB"
 });
 
 connection.connect(function (err) {
@@ -31,7 +31,7 @@ function table() {
         console.log("The available items are:");
         res.forEach((res) => {
             console.log(
-                `id: ${res.item_id} product: ${res.product_name} price: $${res.price} number in stock: ${res.stock_quantity}`
+                `id: ${res.item_id} product: ${res.product_name} price: $${res.price}`
             );
         });
         shop();

@@ -1,6 +1,10 @@
 # bamazon
 
 ## Description
+- App will take in orders from customers
+- App will deplete stock from the store inventory
+- App will track product sales across departments
+- App will provide summary of the highest-grossing departments
 
 ## How to use
 
@@ -13,10 +17,6 @@
 
 ## Role in App Development
 
-- App will take in orders from customers
-- App will deplete stock from the store inventory
-- App will track product sales across departments
-- App will provide summary of the highest-grossing departments
 
 - save and require MySQL and Inquirer npm packages in homework file
 - Screenshots, gif, video in README showing the app working

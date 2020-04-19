@@ -58,9 +58,9 @@ function menu() {
 // [ ] total_profit (calculated on run, not a stored value, use custom alias )
 
 function productDep() {
-
-    // "SELECT department_name, SUM(product_sales) FROM products GROUP BY department_name"
-    connection.query("SELECT * from departments", function(err, res){
+    let query = "SELECT department_id, department_name, over_head_costs, product_sales FROM departments LEFT JOIN (SELECT department_name, SUM(product_sales) as department_sales FROM products GROUP BY department_name on departments.department_name = products.department_name";
+    
+    connection.query(query, function(err, res){
         if (err) throw err;
         console.log("Department List");
         res.forEach((res)=> {

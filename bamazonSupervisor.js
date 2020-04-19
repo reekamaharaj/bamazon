@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
+const Table = require("cli-table");
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -15,7 +16,9 @@ connection.connect(function(err){
     menu();
 });
 
-
+const table = new Table({
+    head: ['Dept ID', 'Department', 'Over Head', 'Sales', 'Profit'], colWidths: [5, 20, 10, 10, 10]
+})
 // run
 // [x] display menu (list)
 //     [x] View Product Sales by Department

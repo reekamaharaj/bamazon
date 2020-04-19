@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
+const Table = require("cli-table");
 
 let moreProduct;
 
@@ -15,6 +16,10 @@ connection.connect(function(err){
     if (err) throw err;
     console.log("connected as id " + connection.threadId + "\n");
     menu();
+});
+
+const table = new Table({
+    head: ['Id', 'Product', 'Price', 'In Stock'], colWidths: [5, 20, 10, 10]
 });
 
 // [x] display menu (list)
@@ -72,10 +77,9 @@ function products(){
         if (err) throw err;
         console.log("The available items are:");
         res.forEach((res) => {
-            console.log(
-                `id: ${res.item_id} product: ${res.product_name} price: $${res.price} quantity in stock: ${res.stock_quantity}`
-            );
+            table.push( [`${res.item_id}`, `${res.product_name}`, `$${res.price}`, `${res.stock_quantity}`])
         });
+        console.log(table.toString());
         connection.end();
     });
 }
@@ -84,13 +88,18 @@ function products(){
 // [x] display all items with an inventory lower than 5
 function lowInventory(){
     let query = "SELECT item_id, product_name, stock_quantity FROM products WHERE stock_quantity <= 5";
+
+    const lowInv = new Table ({
+        head: ['Id', 'Product', 'In Stock'], colWidths: [5,20,10]
+    })
     
     connection.query(query, function(err, res) {
         if (err) throw err;
         console.log("The following products have an inventory less than 5: ");
         res.forEach((res) => {
-            console.log(`id: ${res.item_id} product: ${res.product_name} price: $${res.price} quantity in stock: ${res.stock_quantity}`);
+            lowInv.push([`${res.item_id}`, `${res.product_name}`, `${res.stock_quantity}`]);
         });
+        console.log(lowInv.toString());
         connection.end();
     })
 }
@@ -109,11 +118,9 @@ function addToInventory(){
             for (let i =0; i < res.length; i++){
                 moreProduct = res[i];
                 console.log(
-                    " The following information is for the selected item. \n id: " +
-                        res[i].item_id +
-                        " product: " +
+                    "The following item has been selected:\n" +
                         res[i].product_name +
-                        " number in stock: " + 
+                        "\nIn stock: " + 
                         res[i].stock_quantity
                 );
             }
@@ -143,7 +150,7 @@ function increaseQuant(item){
                 }
             ], function (err, res){
                 if(err) throw err;
-                console.log(res.affectedRows + " stock quantity updated.");
+                console.log("Stock quantity updated.");
             });
             connection.end();
         });

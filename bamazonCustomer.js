@@ -1,5 +1,7 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
+const Table = require("cli-table");
+
 let toBePurchased;
 let total;
 
@@ -14,7 +16,12 @@ const connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId + "\n");
-    table();
+    start();
+});
+
+//table constructor
+const table = new Table({
+    head: ['Id', 'Product', 'Price'], colWidths: [5, 20, 10]
 });
 
 //function to print table
@@ -25,15 +32,16 @@ run
     [x] displays item name
     [x] displays item price
 */
-function table() {
+function start() {
     connection.query("SELECT * from products", function (err, res) {
         if (err) throw err;
         console.log("The available items are:");
         res.forEach((res) => {
-            console.log(
-                `id: ${res.item_id} product: ${res.product_name} price: $${res.price}`
+            table.push(
+                [`${res.item_id}`, `${res.product_name}`, `${res.price}`]
             );
         });
+        console.log(table.toString());
         shop();
     });
 }
@@ -62,14 +70,10 @@ function shop() {
                 for (let i = 0; i < res.length; i++) {
                     toBePurchased = res[i];
                     console.log(
-                        " The following information is for the selected item. \n id: " +
-                            res[i].item_id +
-                            " product: " +
+                        "The following item has been selected for purchase: \n" +
                             res[i].product_name +
-                            " price: $" +
-                            res[i].price +
-                            " number in stock: " +
-                            res[i].stock_quantity
+                            " for $" +
+                            res[i].price
                     );
                 }
                 purchase(toBePurchased);
@@ -103,7 +107,6 @@ function purchase(item) {
             let query = "SELECT stock_quantity FROM products";
             connection.query(query, function (err, res) {
                 if (err) throw err;
-                console.log("in stock: " + item.stock_quantity);
                 console.log("You want: " + request);
                 if (request <= item.stock_quantity){
                     let newQuantity = item.stock_quantity - request;
@@ -120,7 +123,6 @@ function purchase(item) {
                             if(err) throw err;
                             total = (request*item.price);
                             console.log("Your total is: $" + total);
-                            console.log(res.affectedRows + " stock quantity updated.");
                         });
                     connection.end();
                 }

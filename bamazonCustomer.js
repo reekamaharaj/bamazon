@@ -3,7 +3,6 @@ const mysql = require("mysql");
 const Table = require("cli-table");
 
 let toBePurchased;
-let total;
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -64,7 +63,7 @@ function shop() {
         })
         .then(function (response) {
             let query =
-                "SELECT item_id, product_name, price, stock_quantity FROM products WHERE ?";
+                "SELECT item_id, product_name, price, stock_quantity, product_sales FROM products WHERE ?";
             connection.query(query, { item_id: response.item_id }, function (
                 err,
                 res
@@ -113,13 +112,14 @@ function purchase(item) {
                 console.log("You want: " + request);
                 if (request <= item.stock_quantity) {
                     let newQuantity = item.stock_quantity - request;
-                    total = request * item.price;
+                    let total = request * item.price;
+                    let productSales = item.product_sales + total;
                     connection.query(
                         "UPDATE products SET ? WHERE ?",
                         [
                             {
                                 stock_quantity: newQuantity,
-                                product_sales: total
+                                product_sales: productSales
                             },
                             {
                                 item_id: item.item_id,

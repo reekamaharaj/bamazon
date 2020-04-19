@@ -51,3 +51,18 @@ This will run the bamazon supervisor app. When run, a menu will give the user tw
 
 ## Role in App Development
 Created by one developer
+
+
+-------------
+
+
+# Node.js & MySQL
+
+--- track product sales across store departments -> summary of highest grossing departments
+2. Modify the products table so that there's a product_sales column, and modify your `bamazonCustomer.js` app so that when a customer purchases anything from the store, the price of the product multiplied by the quantity purchased is added to the product's product_sales column.
+4. When a supervisor selects `View Product Sales by Department`, the app should display a summarized table in their terminal/bash window. Use the table below as a guide.
+
+| department_id | department_name | over_head_costs | product_sales | total_profit |
+| ------------- | --------------- | --------------- | ------------- | ------------ |
+| 01            | Electronics     | 10000           | 20000         | 10000        |
+| 02            | Clothing        | 60000           | 100000        | 40000        |

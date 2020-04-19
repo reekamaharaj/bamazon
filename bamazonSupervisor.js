@@ -67,9 +67,9 @@ function productDep() {
             table.push([
                 `${res.department_id}`,
                 `${res.department_name}`,
-                'calculate',
                 `${res.over_head_costs}`,
-                `${res.product_sales}`,
+                `product sales calculated`,
+                `total profit`
             ]);
         });
         console.log(table.toString());

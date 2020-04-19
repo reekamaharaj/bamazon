@@ -14,7 +14,7 @@ CREATE TABLE products (
   product_sales DECIMAL(50, 4) NULL,
   PRIMARY KEY (item_id)
 );
---initial product informtaion added to products table
+-- initial product informtaion added to products table
 INSERT INTO products (product_name, department_name, price, stock_quantity)
 VALUES ('Blu-Ray/DVD', 'Books/Movies/Music', 24.99, 25);
 
@@ -56,7 +56,6 @@ CREATE TABLE departments (
     department_id INT NOT NULL AUTO_INCREMENT,
     department_name VARCHAR(100) NULL,
     over_head_costs DECIMAL(10,4) NULL,
-    product_sales DECIMAL(10,4) NULL,
     PRIMARY KEY (department_id)
 );
 -- initial department information added to departments table

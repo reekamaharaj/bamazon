@@ -107,25 +107,26 @@ function purchase(item) {
         })
         .then(function (response) {
             let request = response.amount;
-            let query = "SELECT stock_quantity FROM products";
+            let query = "SELECT stock_quantity, product_sales FROM products";
             connection.query(query, function (err, res) {
                 if (err) throw err;
                 console.log("You want: " + request);
                 if (request <= item.stock_quantity) {
                     let newQuantity = item.stock_quantity - request;
+                    total = request * item.price;
                     connection.query(
                         "UPDATE products SET ? WHERE ?",
                         [
                             {
                                 stock_quantity: newQuantity,
+                                product_sales: total
                             },
                             {
                                 item_id: item.item_id,
-                            },
+                            }
                         ],
                         function (err, res) {
                             if (err) throw err;
-                            total = request * item.price;
                             console.log("Your total is: $" + total);
                         }
                     );

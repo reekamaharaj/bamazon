@@ -10,7 +10,7 @@ const connection = mysql.createConnection({
     port: 3306,
     user: "root",
     password: "yuffie",
-    database: "bamazonDB"
+    database: "bamazonDB",
 });
 
 connection.connect(function (err) {
@@ -21,7 +21,8 @@ connection.connect(function (err) {
 
 //table constructor
 const table = new Table({
-    head: ['Id', 'Product', 'Price'], colWidths: [5, 20, 10]
+    head: ["Id", "Product", "Price"],
+    colWidths: [5, 20, 10],
 });
 
 //function to print table
@@ -37,9 +38,11 @@ function start() {
         if (err) throw err;
         console.log("The available items are:");
         res.forEach((res) => {
-            table.push(
-                [`${res.item_id}`, `${res.product_name}`, `${res.price}`]
-            );
+            table.push([
+                `${res.item_id}`,
+                `${res.product_name}`,
+                `${res.price}`,
+            ]);
         });
         console.log(table.toString());
         shop();
@@ -100,7 +103,7 @@ function purchase(item) {
         .prompt({
             name: "amount",
             type: "number",
-            message: "How many would you like to purchase?"
+            message: "How many would you like to purchase?",
         })
         .then(function (response) {
             let request = response.amount;
@@ -108,25 +111,26 @@ function purchase(item) {
             connection.query(query, function (err, res) {
                 if (err) throw err;
                 console.log("You want: " + request);
-                if (request <= item.stock_quantity){
+                if (request <= item.stock_quantity) {
                     let newQuantity = item.stock_quantity - request;
                     connection.query(
                         "UPDATE products SET ? WHERE ?",
                         [
                             {
-                                stock_quantity: newQuantity
+                                stock_quantity: newQuantity,
                             },
                             {
-                                item_id: item.item_id
-                            }
-                        ], function(err, res) {
-                            if(err) throw err;
-                            total = (request*item.price);
+                                item_id: item.item_id,
+                            },
+                        ],
+                        function (err, res) {
+                            if (err) throw err;
+                            total = request * item.price;
                             console.log("Your total is: $" + total);
-                        });
+                        }
+                    );
                     connection.end();
-                }
-                else {
+                } else {
                     console.log("Sorry we only have " + item.stock_quantity);
                     connection.end();
                 }

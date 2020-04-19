@@ -58,6 +58,8 @@ function menu() {
 // [ ] total_profit (calculated on run, not a stored value, use custom alias )
 
 function productDep() {
+
+    // "SELECT department_name, SUM(product_sales) FROM products GROUP BY department_name"
     connection.query("SELECT * from departments", function(err, res){
         if (err) throw err;
         console.log("Department List");
@@ -68,8 +70,8 @@ function productDep() {
                 `${res.department_id}`,
                 `${res.department_name}`,
                 `${res.over_head_costs}`,
-                `product sales. Updated as sales are made `,
-                `total profit. overhead - product sales`
+                `${res.product_sales}`,
+                `${res.product_sales - res.over_head_costs}`
             ]);
         });
         console.log(table.toString());
@@ -88,12 +90,18 @@ function newDep() {
                 type: "input",
                 message: "What is the name of the department?",
             },
+            {
+                name: "overHead",
+                type: "number",
+                message: "What is the over head for this department?"
+            }
         ])
         .then(function (answer) {
             connection.query(
                 "INSERT INTO departments SET ?",
                 {
                     department_name: answer.deptName,
+                    over_head_costs: answer.overHead
                 },
                 function (err) {
                     if (err) throw err;

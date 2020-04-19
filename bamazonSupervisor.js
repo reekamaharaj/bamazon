@@ -68,8 +68,8 @@ function productDep() {
                 `${res.department_id}`,
                 `${res.department_name}`,
                 `${res.over_head_costs}`,
-                `product sales calculated`,
-                `total profit`
+                `product sales. Updated as sales are made `,
+                `total profit. overhead - product sales`
             ]);
         });
         console.log(table.toString());

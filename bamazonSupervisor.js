@@ -58,9 +58,23 @@ function menu() {
 // [ ] total_profit (calculated on run, not a stored value, use custom alias )
 
 function productDep() {
-    let query = "SELECT departments.department_id, departments.department_name, departments.over_head_costs, intermediate.product_sales FROM departments JOIN ( SELECT departments.department_name, Sum(products.product_sales) AS product_sales FROM products JOIN departments ON GROUP BY departments.department_name ) AS intermediate ON departments.department_name = intermediate.department_name;";
-    //Need to insert the values from this into the departments table. 
-
+    let query = `SELECT
+        departments.department_id,
+        departments.department_name,
+        departments.over_head_costs,
+        intermediate.product_sales
+    FROM
+        departments
+        JOIN (
+        SELECT
+            departments.department_name,
+            Sum(products.product_sales) AS product_sales
+        FROM
+            products
+            JOIN departments ON products.department_name = departments.department_name
+        GROUP BY
+            departments.department_name
+        ) AS intermediate ON departments.department_name = intermediate.department_name`;
 
     connection.query(query, function(err, res){
         if (err) throw err;

@@ -31,8 +31,6 @@ This will run the bamazon manager app. When run, a menu will give the user a lis
 ![](gif/manager.gif)
 
 **`node bamazonSupervisor.js`**
-NOTE: This is still being worked on and is not fully functional at this time. 
-
 This will run the bamazon supervisor app. When run, a menu will give the user two options. 
 
 * View Product Sales by Department

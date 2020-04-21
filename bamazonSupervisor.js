@@ -18,7 +18,7 @@ connection.connect(function (err) {
 
 const table = new Table({
     head: ["Dept ID", "Department", "Over Head", "Sales", "Profit"],
-    colWidths: [5, 20, 15, 10, 10],
+    colWidths: [10, 20, 15, 10, 20],
 });
 // run
 // [x] display menu (list)
@@ -65,7 +65,7 @@ function productDep() {
         intermediate.product_sales
     FROM
         departments
-        JOIN (
+        LEFT JOIN (
         SELECT
             departments.department_name,
             Sum(products.product_sales) AS product_sales
@@ -82,12 +82,13 @@ function productDep() {
         res.forEach((res)=> {
             //in Customer app add sale count
             //Total profit is calculated
+            let profit = res.over_head_costs - res.product_sales;
             table.push([
                 `${res.department_id}`,
                 `${res.department_name}`,
                 `${res.over_head_costs}`,
                 `${res.product_sales}`,
-                `${res.product_sales - res.over_head_costs}`
+                `${profit.toFixed(2)}`
             ]);
         });
         console.log(table.toString());

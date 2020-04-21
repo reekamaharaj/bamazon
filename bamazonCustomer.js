@@ -127,7 +127,7 @@ function purchase(item) {
                         ],
                         function (err, res) {
                             if (err) throw err;
-                            console.log("Your total is: $" + total);
+                            console.log("Your total is: $" + total.toFixed(2));
                         }
                     );
                     connection.end();
